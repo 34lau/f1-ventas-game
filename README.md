@@ -23,3 +23,4 @@
 
 ---
 *Desarrollado para optimizar el rendimiento y la energía en salas de ventas de alto nivel.*
+
