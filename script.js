@@ -19,12 +19,30 @@ const TEAMS = [
   { id: 'astonmartin', name: 'Aston Martin', color: '#358C75', accent: '#FFD700' },
 ];
 
-// Monaco-inspired circuit waypoints (normalised 0–1 coords)
+// Silverstone Grand Prix circuit (normalised 0–1 coords, counterclockwise)
+// Key corners: Copse → Maggotts-Becketts-Chapel → Hangar → Stowe → Club → Abbey → Village/Loop
 const WAYPOINTS = [
-  [.50,.08],[.76,.10],[.90,.20],[.92,.40],
-  [.88,.60],[.76,.77],[.61,.87],[.50,.91],
-  [.39,.87],[.24,.77],[.12,.60],[.08,.40],
-  [.10,.22],[.26,.11],
+  [.60,.24],  // National Pit Straight — SF line
+  [.74,.22],  // Abbey entry
+  [.83,.30],  // Copse (fast right)
+  [.86,.38],  // Maggotts S1
+  [.79,.44],  // Maggotts S2
+  [.85,.49],  // Becketts right
+  [.79,.54],  // Becketts left
+  [.84,.60],  // Chapel / Hangar entry
+  [.83,.68],  // Hangar Straight
+  [.79,.75],  // Stowe entry
+  [.70,.82],  // Stowe apex
+  [.58,.86],  // Vale
+  [.46,.86],  // Club entry
+  [.35,.80],  // Club apex / Woodcote
+  [.26,.72],  // Abbey
+  [.19,.62],  // Village (sharp right)
+  [.15,.53],  // The Loop (hairpin)
+  [.19,.45],  // Aintree (fast left)
+  [.24,.37],  // Wellington Straight
+  [.34,.27],  // Wellington exit
+  [.46,.23],  // Back to National Pit Straight
 ];
 
 const PATH_RES   = 840;   // precomputed points on circuit
@@ -280,45 +298,124 @@ function drawTrack(W, H) {
   if (!circuitPath.length) return;
   const pts = circuitPath.map(p => [p.x * W, p.y * H]);
 
+// Helper: build closed circuit path in ctx
   function tracePath() {
     ctx.beginPath();
     ctx.moveTo(pts[0][0], pts[0][1]);
-    pts.forEach(([x, y]) => ctx.lineTo(x, y));
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
     ctx.closePath();
   }
 
-  // Soft outer glow
+  // ── 1. Union Jack in infield ────────────────────────────────────
+  // Fill the enclosed circuit area and clip to it, then draw the flag.
+  // The dark track stroke painted on top in step 3 covers the track surface,
+  // leaving the flag visible only inside the infield.
   ctx.save();
-  ctx.strokeStyle = 'rgba(255,215,0,.04)';
-  ctx.lineWidth = 34; ctx.lineCap = ctx.lineJoin = 'round';
+  tracePath();
+  ctx.clip();
+
+  // Bounding box of the circuit interior
+  let minX = W, minY = H, maxX = 0, maxY = 0;
+  pts.forEach(([x, y]) => {
+    if (x < minX) minX = x; if (x > maxX) maxX = x;
+    if (y < minY) minY = y; if (y > maxY) maxY = y;
+  });
+  const bx = minX, by = minY, bw = maxX - minX, bh = maxY - minY;
+  const cx = bx + bw / 2, cy = by + bh / 2;
+
+  // Blue field
+  ctx.fillStyle = '#012169';
+  ctx.fillRect(bx, by, bw, bh);
+
+  // St Andrew's cross (white diagonals — wide)
+  ctx.strokeStyle = '#FFFFFF';
+  ctx.lineWidth = bh * .27;
+  ctx.lineCap = 'butt';
+  ctx.beginPath();
+  ctx.moveTo(bx, by);   ctx.lineTo(bx + bw, by + bh);
+  ctx.moveTo(bx + bw, by); ctx.lineTo(bx, by + bh);
+  ctx.stroke();
+
+  // St Patrick's cross (red diagonals — narrow, offset)
+  ctx.strokeStyle = '#CF142B';
+  ctx.lineWidth = bh * .13;
+  ctx.beginPath();
+  ctx.moveTo(bx, by);   ctx.lineTo(bx + bw, by + bh);
+  ctx.moveTo(bx + bw, by); ctx.lineTo(bx, by + bh);
+  ctx.stroke();
+
+  // St George's cross (white vertical + horizontal — wide)
+  ctx.strokeStyle = '#FFFFFF';
+  ctx.lineWidth = bh * .30;
+  ctx.beginPath();
+  ctx.moveTo(cx, by); ctx.lineTo(cx, by + bh);
+  ctx.moveTo(bx, cy); ctx.lineTo(bx + bw, cy);
+  ctx.stroke();
+
+  // St George's cross (red — narrower)
+  ctx.strokeStyle = '#CF142B';
+  ctx.lineWidth = bh * .18;
+  ctx.beginPath();
+  ctx.moveTo(cx, by); ctx.lineTo(cx, by + bh);
+  ctx.moveTo(bx, cy); ctx.lineTo(bx + bw, cy);
+  ctx.stroke();
+
+  // Dark atmospheric overlay so the flag reads as depth, not flat
+  ctx.fillStyle = 'rgba(0,0,0,.60)';
+  ctx.fillRect(bx - 5, by - 5, bw + 10, bh + 10);
+
+  ctx.restore(); // end clip
+
+  // ── 2. Outer crimson neon glow (3 passes for intensity) ─────────
+  ctx.save();
+  ctx.shadowColor = '#FF1801'; ctx.shadowBlur = 35;
+  ctx.strokeStyle = '#CC0000';
+  ctx.lineWidth = 32; ctx.lineCap = ctx.lineJoin = 'round';
   tracePath(); ctx.stroke();
   ctx.restore();
 
-  // Track surface
   ctx.save();
-  ctx.strokeStyle = '#1c1c20';
-  ctx.lineWidth = 24; ctx.lineCap = ctx.lineJoin = 'round';
+  ctx.shadowColor = '#FF3300'; ctx.shadowBlur = 18;
+  ctx.strokeStyle = '#EE1100';
+  ctx.lineWidth = 26;
+  tracePath(); ctx.stroke();
+  ctx.restore();
+  ctx.save();
+  ctx.shadowColor = '#FF6644'; ctx.shadowBlur = 8;
+  ctx.strokeStyle = '#FF2200';
+  ctx.lineWidth = 20;
   tracePath(); ctx.stroke();
   ctx.restore();
 
-  // Track centre line (subtle)
+   // ── 3. Dark asphalt track surface ───────────────────────────────
   ctx.save();
-  ctx.strokeStyle = 'rgba(255,255,255,.04)';
-  ctx.lineWidth = 1; ctx.setLineDash([6, 10]);
-  tracePath(); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle = '#0c0c0f';
+  ctx.lineWidth = 18; ctx.lineCap = ctx.lineJoin = 'round';
+  tracePath(); ctx.stroke();
   ctx.restore();
 
-  // Start/finish line
-  const sf  = circuitPath[0];
-  const sf2 = circuitPath[1];
-  const ang = Math.atan2((sf2.y - sf.y) * H, (sf2.x - sf.x) * W) + Math.PI / 2;
-  const sx = sf.x * W, sy = sf.y * H;
+  // ── 4. Inner white edge line ─────────────────────────────────────
   ctx.save();
-  ctx.translate(sx, sy); ctx.rotate(ang);
-  ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 2.5;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(14, 0); ctx.stroke();
-  ctx.setLineDash([]);
+  ctx.strokeStyle = 'rgba(255,255,255,.72)';
+  ctx.lineWidth = 1.4;
+  tracePath(); ctx.stroke();
+  ctx.restore();
+
+  // ── 5. Start/Finish chequered line ───────────────────────────────
+  const sf   = circuitPath[0];
+  const sf2  = circuitPath[2]; // skip 1 point for stable angle
+  const sfAng = Math.atan2((sf2.y - sf.y) * H, (sf2.x - sf.x) * W) + Math.PI / 2;
+  ctx.save();
+  ctx.translate(sf.x * W, sf.y * H);
+  ctx.rotate(sfAng);
+  // Chequered blocks
+  const sqSize = 3.5;
+  for (let row = 0; row < 4; row++) {
+    for (let col = -2; col < 2; col++) {
+      ctx.fillStyle = (row + col) % 2 === 0 ? '#FFFFFF' : '#000000';
+      ctx.fillRect(col * sqSize, (row - 2) * sqSize, sqSize, sqSize);
+    }
+  }
   ctx.restore();
 }
 
