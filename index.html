@@ -45,6 +45,19 @@
     <div id="main-layout">
 
       <section id="circuit-section">
+         <!-- F1 Official Logo Overlay -->
+        <div class="f1-logo-overlay" aria-hidden="true">
+          <svg viewBox="0 0 120 48" xmlns="http://www.w3.org/2000/svg" class="f1-svg">
+            <!-- F -->
+            <polygon points="0,0 38,0 38,10 12,10 12,18 34,18 34,28 12,28 12,48 0,48" fill="#E8002D"/>
+            <!-- 1 (negative space trick: white rect + red shape) -->
+            <polygon points="44,48 44,10 52,0 72,0 60,10 60,48" fill="#E8002D"/>
+            <!-- red background pill -->
+            <rect x="76" y="0" width="44" height="48" rx="6" fill="#E8002D"/>
+            <!-- white "1" inside pill -->
+            <polygon points="90,48 90,14 96,6 108,6 100,14 100,48" fill="#FFFFFF"/>
+          </svg>
+        </div>
         <canvas id="circuit-canvas"></canvas>
         <div id="notif-banner" class="hidden"></div>
       </section>
@@ -72,3 +85,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+
