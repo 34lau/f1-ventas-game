@@ -24,7 +24,12 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   width: 100%; height: 100%; overflow: hidden;
-  background: var(--bg);
+   /* F1 Brand background: deep dark + crimson ambient glow */
+  background:
+    radial-gradient(ellipse 72% 58% at 10% 92%, #4d0000 0%, #250000 30%, transparent 62%),
+    radial-gradient(ellipse 40% 30% at 92% 90%, #1f0000 0%, transparent 52%),
+    radial-gradient(ellipse 30% 25% at 92% 5%,  #1a0000 0%, transparent 50%),
+    #030305;
   color: var(--text);
   font-family: var(--font);
   font-size: 15px;
