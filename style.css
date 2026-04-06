@@ -29,6 +29,16 @@ html, body {
   font-family: var(--font);
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
+   
+}
+
+/* ─── F1 Brand Background: dark + red ambient glow (matches reference) ── */
+body {
+  background:
+    radial-gradient(ellipse 72% 58% at 10% 92%, #4d0000 0%, #250000 30%, transparent 62%),
+    radial-gradient(ellipse 40% 30% at 92% 90%, #1f0000 0%, transparent 52%),
+    radial-gradient(ellipse 30% 25% at 92% 5%,  #1a0000 0%, transparent 50%),
+    #030305;
 }
 
 /* ── Carbon-fibre texture ─────────────────────────────────────────── */
