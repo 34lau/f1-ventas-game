@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F1 Sales Grand Prix</title>
+
+  <!-- F1-style fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP 3 for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ══ SETUP SCREEN ══════════════════════════════════════════ -->
+  <div id="setup-screen"></div>
+
+  <!-- ══ GAME SCREEN ══════════════════════════════════════════ -->
+  <div id="game-screen">
+
+    <!-- HUD Top: Group Progress Bar -->
+    <div id="hud-top">
+      <div id="hud-left">
+        <span class="hud-label">META GRUPAL</span>
+        <span id="hud-values" class="hud-values">— / —</span>
+      </div>
+      <div id="progress-track">
+        <div id="progress-fill"></div>
+        <span id="progress-pct">0%</span>
+        <div class="chequered-flag"></div>
+      </div>
+      <div id="hud-right">
+        <button class="ctrl-btn" onclick="toggleSupervisor()" title="Panel Supervisor [S]">PIT WALL</button>
+        <button class="ctrl-btn" id="btn-audio" onclick="toggleAudio()">🔊</button>
+        <button class="ctrl-btn" onclick="openSetup()">⚙</button>
+      </div>
+    </div>
+
+    <!-- Main Layout: Circuit + Leaderboard -->
+    <div id="main-layout">
+
+      <section id="circuit-section">
+        <canvas id="circuit-canvas"></canvas>
+        <div id="notif-banner" class="hidden"></div>
+      </section>
+
+      <aside id="leaderboard-section">
+        <div id="lb-header">
+          <span>P</span>
+          <span>PILOTO</span>
+          <span>VENTAS</span>
+          <span>META</span>
+        </div>
+        <div id="lb-rows"></div>
+        <div id="lb-footer">
+          <span id="lb-session-label">SESSION LIVE</span>
+          <span class="lb-dot-live"></span>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- ══ SUPERVISOR MODAL (injected by JS) ═══════════════════ -->
+  <div id="supervisor-modal"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
