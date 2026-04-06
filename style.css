@@ -317,11 +317,33 @@ body::before {
 #circuit-section {
   flex: 1;
   position: relative; overflow: hidden;
-  background: radial-gradient(ellipse at 50% 50%, #0a0a0d 0%, #050507 100%);
+  /* Transparent — body background bleeds through */
+  background: transparent;
+  /* Perspective context for the 3D canvas */
+  perspective: 1100px;
+  perspective-origin: 50% 40%;
 }
+
+/* ── F1 Official Logo overlay ─────────────────────────────────────── */
+.f1-logo-overlay {
+  position: absolute; top: 22px; left: 24px;
+  z-index: 30; pointer-events: none;
+  width: 86px; opacity: .92;
+  filter: drop-shadow(0 0 10px rgba(232,0,45,.6));
+}
+.f1-svg { width: 100%; height: auto; display: block; }
+
+/* ── Canvas: 3D isometric transform (matches reference image) ─────── */
 #circuit-canvas {
   display: block;
   width: 100%; height: 100%;
+  transform-origin: 50% 48%;
+  transform:
+    rotateX(50deg)
+    rotateY(-16deg)
+    rotateZ(-5deg)
+    scale(1.52);
+  will-change: transform;
 }
 
 /* Notification Banner */
